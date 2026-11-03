@@ -65,9 +65,34 @@ flowchart TD
 ## 🌟 4-Day Sprint Roadmap
 
 - [x] **Day 1: Scaffolding & Architecture**: PostgreSQL 16 schema design, SQLAlchemy 2.0 declarative models (`CanvasSession`, `CanvasNode`, `CanvasEdge`, `MultimodalMessage`, `ActionExecution`), Pydantic v2 schemas, application settings, database session pooling, and FastAPI lifecycle.
-- [ ] **Day 2: Core Logic & Real-Time WebSocket Engine**: Bidirectional WebSocket connection manager, streaming audio frame processor, VAD/intent classifier, action dispatcher engine, and RESTful session management APIs.
+- [x] **Day 2: Core Logic & Real-Time WebSocket Engine**: Bidirectional WebSocket connection manager, streaming audio frame processor, VAD/intent classifier, action dispatcher engine, and RESTful session management APIs.
 - [ ] **Day 3: Frontend UI / Canvas Cockpit**: Interactive React 18 infinite canvas viewer, real-time audio visualizer waveform, live node manipulation, and WebSocket communication hook.
 - [ ] **Day 4: Testing, Performance Benchmarks & Docker Compose**: Automated integration test suites, end-to-end WebSocket roundtrip latency benchmarks, demo data seeder, and containerized Docker Compose deployment.
+
+---
+
+## 🔌 API Endpoints Reference
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/sessions` | Create a new interactive canvas workspace session |
+| `GET` | `/api/v1/sessions` | List active sessions with pagination & timestamp sorting |
+| `GET` | `/api/v1/sessions/{session_id}` | Retrieve full canvas session details, nodes, edges, messages, actions |
+| `PATCH` | `/api/v1/sessions/{session_id}` | Update session title, description, viewport state, or status |
+| `DELETE` | `/api/v1/sessions/{session_id}` | Delete session and cascade deletion to all graph elements |
+| `GET` | `/api/v1/sessions/{session_id}/topology` | Graph topology analysis: in/out degrees, root/leaf nodes, cycle check |
+| `POST` | `/api/v1/sessions/{session_id}/nodes` | Spawn a new node onto the 2D canvas |
+| `GET` | `/api/v1/sessions/{session_id}/nodes` | List all nodes deployed in the session |
+| `GET` | `/api/v1/sessions/{session_id}/nodes/{node_id}` | Retrieve single node state, coordinates, and execution data |
+| `PATCH` | `/api/v1/sessions/{session_id}/nodes/{node_id}` | Update node coordinates, dimensions, label, or execution status |
+| `DELETE` | `/api/v1/sessions/{session_id}/nodes/{node_id}` | Delete node and automatically detach attached edges |
+| `POST` | `/api/v1/sessions/{session_id}/edges` | Wire two node handles together via directed connection |
+| `GET` | `/api/v1/sessions/{session_id}/edges` | List all directed connections in the session |
+| `DELETE` | `/api/v1/sessions/{session_id}/edges/{edge_id}` | Remove a directed edge connection |
+| `POST` | `/api/v1/sessions/{session_id}/actions/voice-intent` | Dispatch speech-to-action intent, mutate canvas, broadcast to clients |
+| `GET` | `/api/v1/sessions/{session_id}/actions` | Audit log of dispatched actions and execution latencies |
+| `POST` | `/api/v1/sessions/{session_id}/actions/vad-check` | Analyze 16-bit PCM chunk for RMS energy and voice activity |
+| `WS` | `/ws/v1/sessions/{session_id}` | Full-duplex WebSocket gateway for streaming speech and live state diffs |
 
 ---
 
