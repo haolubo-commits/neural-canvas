@@ -17,6 +17,8 @@ from app.models import (
     MultimodalMessage,
     ActionExecution,
 )
+from app.api.v1.api import api_router
+from app.api.v1.endpoints.websocket import router as ws_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("neural_canvas")
@@ -53,6 +55,10 @@ if settings.CORS_ORIGINS:
         allow_headers=["*"],
     )
 
+# Mount REST API v1 router and WebSocket gateway router
+app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(ws_router)
+
 
 @app.get("/health", tags=["Health"])
 async def health_check():
@@ -84,3 +90,4 @@ async def root():
         "api_v1": settings.API_V1_STR,
         "ws_v1": settings.WS_V1_STR,
     }
+
