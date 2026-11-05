@@ -66,7 +66,7 @@ flowchart TD
 
 - [x] **Day 1: Scaffolding & Architecture**: PostgreSQL 16 schema design, SQLAlchemy 2.0 declarative models (`CanvasSession`, `CanvasNode`, `CanvasEdge`, `MultimodalMessage`, `ActionExecution`), Pydantic v2 schemas, application settings, database session pooling, and FastAPI lifecycle.
 - [x] **Day 2: Core Logic & Real-Time WebSocket Engine**: Bidirectional WebSocket connection manager, streaming audio frame processor, VAD/intent classifier, action dispatcher engine, and RESTful session management APIs.
-- [ ] **Day 3: Frontend UI / Canvas Cockpit**: Interactive React 18 infinite canvas viewer, real-time audio visualizer waveform, live node manipulation, and WebSocket communication hook.
+- [x] **Day 3: Frontend UI / Canvas Cockpit**: Interactive React 18 infinite canvas viewer, real-time audio visualizer waveform, live node manipulation, and WebSocket communication hook.
 - [ ] **Day 4: Testing, Performance Benchmarks & Docker Compose**: Automated integration test suites, end-to-end WebSocket roundtrip latency benchmarks, demo data seeder, and containerized Docker Compose deployment.
 
 ---
@@ -169,3 +169,11 @@ uvicorn app.main:app --reload --port 8000
 ```
 - Interactive API Docs: `http://localhost:8000/docs`
 - Health Endpoint: `http://localhost:8000/health`
+
+### 4. Frontend UI Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+- Access the Cockpit at `http://localhost:5173`
