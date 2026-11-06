@@ -183,7 +183,7 @@ class ActionDispatcher:
             status = ActionStatus.FAILED
             error_msg = str(e)
             result_payload = {"error": error_msg}
-            assistant_reply = f"Encountered an issue executing action: {error_msg}"
+            assistant_reply = f"Error executing action: {error_msg}"
 
         elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
 

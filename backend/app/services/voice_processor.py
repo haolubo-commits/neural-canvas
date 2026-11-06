@@ -62,18 +62,22 @@ class VoiceProcessor:
         # "add prompt node for customer feedback"
         # "new tool node"
         create_match = re.search(
-            r"(?:create|add|new|insert|spawn)\s+(?:a\s+|an\s+)?(prompt|tool|data_source|filter|transform|visualization|output)\s+node(?:\s+(?:named|called|labeled)\s+([a-zA-Z0-9_\-\s]+))?",
+            r"(?:create|add|new|insert|spawn)\s+(?:a\s+|an\s+)?(prompt|tool|data_source|filter|transform|visualization|output)\s+node(?:\s+(?:named|called|labeled)\s+([a-zA-Z0-9_\-\s]+?))?(?:\s+at\s+(\d+)\s*,\s*(\d+))?$",
             lower_text,
         )
         if create_match:
             raw_type = create_match.group(1).lower()
             node_type = self._map_node_type(raw_type)
-            label = create_match.group(2).strip() if create_match.group(2) else f"{raw_type.capitalize()} Node"
 
-            # Check if coordinates mentioned, e.g. "at 200, 300"
-            pos_match = re.search(r"at\s+(\d+)\s*,\s*(\d+)", lower_text)
-            pos_x = float(pos_match.group(1)) if pos_match else 220.0
-            pos_y = float(pos_match.group(2)) if pos_match else 180.0
+            if create_match.group(2):
+                s, e = create_match.span(2)
+                label = clean_text[s:e].strip()
+                label = re.sub(r"\s+at\s+\d+.*$", "", label, flags=re.IGNORECASE).strip()
+            else:
+                label = f"{raw_type.capitalize()} Node"
+
+            pos_x = float(create_match.group(3)) if create_match.group(3) else 220.0
+            pos_y = float(create_match.group(4)) if create_match.group(4) else 180.0
 
             return {
                 "action_type": ActionType.CREATE_NODE,
@@ -94,12 +98,14 @@ class VoiceProcessor:
         # "wire churn_filter to slack_alert"
         # "link prompt to tool"
         connect_match = re.search(
-            r"(?:connect|wire|link|pipe)\s+(?:node\s+)?([a-zA-Z0-9_\-]+)\s+(?:to|into|with)\s+(?:node\s+)?([a-zA-Z0-9_\-]+)",
+            r"(?:connect|wire|link|pipe)\s+(?:node\s+)?([a-zA-Z0-9_\-\s]+?)\s+(?:to|into|with)\s+(?:node\s+)?([a-zA-Z0-9_\-\s]+)$",
             lower_text,
         )
         if connect_match:
-            source = connect_match.group(1).strip()
-            target = connect_match.group(2).strip()
+            s_start, s_end = connect_match.span(1)
+            t_start, t_end = connect_match.span(2)
+            source = clean_text[s_start:s_end].strip()
+            target = clean_text[t_start:t_end].strip()
             return {
                 "action_type": ActionType.CONNECT_NODES,
                 "confidence": 0.94,
@@ -114,11 +120,12 @@ class VoiceProcessor:
         # 3. DELETE NODE
         # Examples: "delete node churn_filter", "remove node 123"
         delete_match = re.search(
-            r"(?:delete|remove|destroy|drop)\s+(?:node\s+)?([a-zA-Z0-9_\-]+)",
+            r"(?:delete|remove|destroy|drop)\s+(?:node\s+)?([a-zA-Z0-9_\-\s]+)$",
             lower_text,
         )
         if delete_match:
-            target_node = delete_match.group(1).strip()
+            d_start, d_end = delete_match.span(1)
+            target_node = clean_text[d_start:d_end].strip()
             return {
                 "action_type": ActionType.DELETE_NODE,
                 "confidence": 0.92,
